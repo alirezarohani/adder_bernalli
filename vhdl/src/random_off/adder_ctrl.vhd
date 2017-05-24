@@ -68,6 +68,7 @@ architecture fsm of adder_ctrl is
 		
 		case current_state is
 			when initial =>
+                wait for 100 ns;
 				if adder_en = '1' then
 					next_state <= s0_first;
 				else
@@ -160,9 +161,14 @@ architecture fsm of adder_ctrl is
 				load_c_3(num_bits-1 downto 0) <=  (others => '0');
 			
 				sel <= '1';
-				data_out_valid <= '1';
+				
 				--en_lfsr <= '1';	
-				next_state <= initial_next;
+                wait for 100 ns;
+				next_state <= final_2;
+                
+            when final_2 =>
+                data_out_valid <= '1';
+                next_state <= initial_next;
 				
 			when others =>
 				next_state <= initial;
