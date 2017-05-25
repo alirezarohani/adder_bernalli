@@ -28,9 +28,10 @@ entity adder_ctrl is
 end entity adder_ctrl;
 
 architecture fsm of adder_ctrl is 
-	type state_type is (initial, initial_next,s0_first, s0_next,s1,final);
+	type state_type is (initial, initial_next,s0_first, s0_next,s1,final, dummy_1,dummy_2, dummy_3);
 	signal next_state, current_state: state_type;
 	signal count, next_count: INTEGER RANGE 0 to 33;
+	signal count_dummy, next_count_dummy: INTEGER RANGE 0 to 6;
 	
 	begin	
 	
@@ -47,12 +48,14 @@ architecture fsm of adder_ctrl is
 		begin	
 			if (reset_n = '0') then	
 					count <= 0;
+					count_dummy <= 0;
 			elsif (clk'event and clk='1') then
 				count <= next_count;
+				count_dummy <= next_count_dummy;
 			end if;
 		end process;
 		
-		comb_logic: process(current_state,adder_en,count)
+		comb_logic: process(current_state,adder_en,count,count_dummy)
 		begin	
 		load_s_1 <= (others => '0');
 		load_s_2 <= (others => '0');
@@ -64,23 +67,41 @@ architecture fsm of adder_ctrl is
 		sel <= '0';
 		data_out_valid <= '0';
 		next_count <= 0;
+		next_count_dummy <= 0;
 		sel_rand <= '0';
 		
 		case current_state is
 			when initial =>
 				if adder_en = '1' then
-					next_state <= s0_first;
+					next_state <= dummy_1;
 				else
 					next_state <= initial;
 				end if;
 			
 			when initial_next =>
 				if adder_en = '1' then
-					next_state <= s0_next;
+					next_state <= dummy_2;
 				else
 					next_state <= initial_next;
 				end if;	
 			
+			
+			when dummy_1 =>
+				next_count_dummy <= count_dummy + 1;
+				if count_dummy  <5 then
+					next_state <= dummy_1;
+				else
+					next_state <= s0_first;
+				end if;
+				
+			when dummy_2 =>
+				next_count_dummy  <= count_dummy + 1;
+				if count_dummy  <5 then
+					next_state <= dummy_2;
+				else
+					next_state <= s0_next;
+				end if;
+					
 				
 			when s0_first =>
 				load_s_1 <= (others => '1');
@@ -104,6 +125,7 @@ architecture fsm of adder_ctrl is
 				next_state <= s1;
 				next_count <= count + 1;
 				sel_rand <= '1';
+				
 				
 			when s1 =>
 				
@@ -136,6 +158,14 @@ architecture fsm of adder_ctrl is
 				if count  <= num_bits-1 then
 					next_state <= s1;
 				elsif count > num_bits-1 then
+					next_state <= dummy_3;
+				end if;
+				
+			when dummy_3 =>
+				next_count_dummy  <= count_dummy + 1;
+				if count_dummy  <5 then
+					next_state <= dummy_3;
+				else
 					next_state <= final;
 				end if;
 				
@@ -163,7 +193,7 @@ architecture fsm of adder_ctrl is
 				data_out_valid <= '1';
 				--en_lfsr <= '1';	
 				next_state <= initial_next;
-				
+
 			when others =>
 				next_state <= initial;
 				
