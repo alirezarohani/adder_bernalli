@@ -21,7 +21,7 @@ port(
 	rn32b_3   : in std_logic_vector(num_bits-1  downto 0);
 	rn32b_4   : in std_logic_vector(num_bits-1  downto 0);
 	rn1b	  : in std_logic;
-	sel_rand : in std_logic;
+	--sel_rand : in std_logic;
 	load_s_1: in std_logic_vector(num_bits  downto 0);
 	load_s_2: in std_logic_vector(num_bits  downto 0);
 	load_s_3: in std_logic_vector(num_bits  downto 0);
@@ -75,9 +75,10 @@ architecture str of adder_dp is
 	signal c_1_out, c_2_out,c_3_out : std_logic_vector(num_bits  downto 0);
 	signal x_in_1, x_in_2,x_in_3 : std_logic_vector(num_bits  downto 0);
 	signal y_in_1, y_in_2,y_in_3 : std_logic_vector(num_bits  downto 0);
-	signal mux_i_1_z, mux_i_2_z,mux_i_3_z,mux_i_4_z : std_logic_vector(num_bits-1  downto 0);
+	--signal mux_i_1_z, mux_i_2_z,mux_i_3_z,mux_i_4_z : std_logic_vector(num_bits-1  downto 0);
 	-- generating random value for z
-	signal z_in_t, c_out_t: std_logic;
+	--signal z_in_t: std_logic;
+	signal c_out_t: std_logic;
 	signal z_out_t: std_logic_vector(num_bits-1  downto 0);
 	signal mux_z_output : std_logic_vector(num_bits  downto 1);
 
@@ -87,14 +88,14 @@ architecture str of adder_dp is
 	--------------------------------------------------------------
 	
 	-- 32 mux to select between external random number or the output of previous round. sel_input alternates the inputs
-	MUX_INPUT: for i in 0 to num_bits-1 generate
-			mux_input_1:mux port map(rn32b_1(i),s_1_out(i),sel_rand,mux_i_1_z(i));
-			mux_input_2:mux port map(rn32b_2(i),s_2_out(i),sel_rand,mux_i_2_z(i));
-			mux_input_3:mux port map(rn32b_3(i),s_2_out(i),sel_rand,mux_i_3_z(i));
-			mux_input_4:mux port map(rn32b_4(i),s_3_out(i),sel_rand,mux_i_4_z(i));
-	end generate;
+	-- MUX_INPUT: for i in 0 to num_bits-1 generate
+			-- mux_input_1:mux port map(rn32b_1(i),s_1_out(i),sel_rand,mux_i_1_z(i));
+			-- mux_input_2:mux port map(rn32b_2(i),s_2_out(i),sel_rand,mux_i_2_z(i));
+			-- mux_input_3:mux port map(rn32b_3(i),s_2_out(i),sel_rand,mux_i_3_z(i));
+			-- mux_input_4:mux port map(rn32b_4(i),s_3_out(i),sel_rand,mux_i_4_z(i));
+	-- end generate;
 	
-	MUX_INPUT_1bit: mux port map(rn1b,c_out_t,sel_rand,z_in_t);
+	--MUX_INPUT_1bit: mux port map(rn1b,c_out_t,sel_rand,z_in_t);
 	
 	
 	
@@ -107,15 +108,17 @@ architecture str of adder_dp is
 	
 	---------------------------------------------------------------
 	
-	--- making the shares
+	--- all the shares are coming from outside (UART)
 	x_share: for i in 0 to num_bits-1 generate
-			x_in_1(i) <= mux_i_1_z(i);
-			x_in_2(i) <= mux_i_2_z(i);
-			x_in_3(i) <= x_in_1(i) xor x_in_2(i) xor x(i);
+			x_in_1(i) <= rn32b_1(i);
+			x_in_2(i) <= rn32b_2(i);
+			x_in_3(i) <= x(i);
+			--x_in_3(i) <= x_in_1(i) xor x_in_2(i) xor x(i);
 	
-			y_in_1(i) <= mux_i_3_z(i);
-			y_in_2(i) <= mux_i_4_z(i);
-			y_in_3(i) <= y_in_1(i) xor y_in_2(i) xor y(i);
+			y_in_1(i) <= rn32b_3(i);
+			y_in_2(i) <= rn32b_4(i);
+			y_in_3(i) <= y(i);
+			--y_in_3(i) <= y_in_1(i) xor y_in_2(i) xor y(i);
 		
 			--z_in_t <= mux_i_1_z(0);
 	end generate;
@@ -198,7 +201,7 @@ architecture str of adder_dp is
 	
 	HALF_ADDERS: for i in 0 to num_bits  generate
 			first_ha: if i=0 generate
-				first:ha port map (tmp1x(i),tmp2x(i),tmp3x(i),tmp1y(i),tmp2y(i),tmp3y(i),z_in_t,tmp_c_1(i),tmp_c_2(i),tmp_c_3(i),tmp_s_1(i),tmp_s_2(i),tmp_s_3(i));
+				first:ha port map (tmp1x(i),tmp2x(i),tmp3x(i),tmp1y(i),tmp2y(i),tmp3y(i),rn1b,tmp_c_1(i),tmp_c_2(i),tmp_c_3(i),tmp_s_1(i),tmp_s_2(i),tmp_s_3(i));
 				end generate;
 				
 			next_ha: if 1<=i and i<=num_bits generate

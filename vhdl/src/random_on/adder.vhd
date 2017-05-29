@@ -40,7 +40,7 @@ component  adder_dp
 	rn32b_3   : in std_logic_vector(num_bits-1  downto 0);
 	rn32b_4   : in std_logic_vector(num_bits-1  downto 0);
 	rn1b	  : in std_logic;
-	sel_rand : in std_logic;
+	--sel_rand : in std_logic;
 	load_s_1: in std_logic_vector(num_bits  downto 0);
 	load_s_2: in std_logic_vector(num_bits  downto 0);
 	load_s_3: in std_logic_vector(num_bits  downto 0);
@@ -60,7 +60,7 @@ component adder_ctrl generic (
 		reset_n : in std_logic;
 		adder_en: in std_logic;
 		
-		sel_rand : out std_logic;
+		--sel_rand : out std_logic;
 		load_s_1: out std_logic_vector(num_bits downto 0);
 		load_s_2: out std_logic_vector(num_bits downto 0);
 		load_s_3: out std_logic_vector(num_bits downto 0);
@@ -74,14 +74,14 @@ component adder_ctrl generic (
 		
 	end component adder_ctrl;
 
-signal sel_t,sel_rand_t:std_logic;
+signal sel_t:std_logic;
 signal load_s_1_t,load_s_2_t,load_s_3_t,load_c_1_t,load_c_2_t,load_c_3_t : std_logic_vector(num_bits downto 0);
 signal sel_z_t: std_logic_vector(num_bits downto 1);
 signal c_out_t: std_logic_vector(7 downto 0) := (others => '0'); 
 
 begin
-adder_datapath:adder_dp port map(x,y,rst_n,clk,sel_t,rand_1,rand_2,rand_3,rand_4,rand_1bit(0),sel_rand_t,load_s_1_t,load_s_2_t,load_s_3_t,load_c_1_t,load_c_2_t,load_c_3_t,sel_z_t,s,c_out_t(0));
-adder_controller:adder_ctrl port map(clk,rst_n,adder_en,sel_rand_t,load_s_1_t,load_s_2_t,load_s_3_t,load_c_1_t,load_c_2_t,load_c_3_t,sel_z_t,sel_t,data_out_valid);
+adder_datapath:adder_dp port map(x,y,rst_n,clk,sel_t,rand_1,rand_2,rand_3,rand_4,rand_1bit(0),load_s_1_t,load_s_2_t,load_s_3_t,load_c_1_t,load_c_2_t,load_c_3_t,sel_z_t,s,c_out_t(0));
+adder_controller:adder_ctrl port map(clk,rst_n,adder_en,load_s_1_t,load_s_2_t,load_s_3_t,load_c_1_t,load_c_2_t,load_c_3_t,sel_z_t,sel_t,data_out_valid);
 c_out <= c_out_t;
 
 end architecture str;
