@@ -10,7 +10,7 @@ import numpy as np
 import scipy.io as spio
 import datetime
 import os
-import chacha_unprotected as chacha
+#import chacha_unprotected as chacha
 
 en_oscilloscope = False
 
@@ -101,10 +101,12 @@ if __name__ == "__main__":
     s_results_fixed = np.zeros((traces_per_file, 1), np.uint32)
     totaltraces = 0
     #Inputs x and y
+    # all the shares are produced by this python script
     x = np.empty((1), np.uint32)
     tvla_y = np.empty((1), np.uint32)
     y = np.empty((1), np.uint32)
     
+    #fixed x and y
     x= int(random.randint(0,0xFFFFFFFF))
     tvla_y = int(random.randint(0,0xFFFFFFFF))
     
@@ -115,37 +117,13 @@ if __name__ == "__main__":
     y_2_random = np.empty((1), np.uint32)
     z_random = np.empty((1), np.uint32)
     
-    x_1_random = int(random.randint(0,0xFFFFFFFF))
-    x_2_random = int(random.randint(0,0xFFFFFFFF))
-    y_1_random = int(random.randint(0,0xFFFFFFFF))
-    y_2_random = int(random.randint(0,0xFFFFFFFF))
-    z_random = int(random.randint(0,0xFFFFFFFF))
+    # x_1_random = int(random.randint(0,0xFFFFFFFF))
+    # x_2_random = int(random.randint(0,0xFFFFFFFF))
+    # y_1_random = int(random.randint(0,0xFFFFFFFF))
+    # y_2_random = int(random.randint(0,0xFFFFFFFF))
+    # z_random = int(random.randint(0,0xFFFFFFFF))
     
     #state = [0]*16
-    
-    # send x
-    for k in xrange(0,4):
-        write(ser, byte(x, 3-k), 27-(k))
-    
-    # send x_1 random number
-    for k in xrange(0,4):
-        write(ser, byte(x_1_random, 3-k), 27-(k+8))
-
-    # send x_2 random number
-    for k in xrange(0,4):
-        write(ser, byte(x_2_random, 3-k), 27-(k+12))
-
-    # send y_1 random number
-    for k in xrange(0,4):
-        write(ser, byte(y_1_random, 3-k), 27-(k+16))
-
-    # send y_2 random number
-    for k in xrange(0,4):
-        write(ser, byte(y_2_random, 3-k), 27-(k+20))
-
-    # send z random number
-    for k in xrange(0,4):
-        write(ser, byte(z_random, 3-k), 27-(k+24))
 
        
     # send key
@@ -154,9 +132,35 @@ if __name__ == "__main__":
             # write(ser, byte(key[j], 3-k), 63-(j*4+k+16))
     
     for i in range(0,traces) : 
-        # generate random y
+    
+        # send three shares of x (x always fixed)
+        x_1_random = int(random.randint(0,0xFFFFFFFF))
+        x_2_random = int(random.randint(0,0xFFFFFFFF))
+        x_3_random = (x_1_random ^ x_2_random ^ x) & 0xFFFFFFFF
+        for k in xrange(0,4):
+            write(ser, byte(x_3_random, 3-k), 27-(k))
+        for k in xrange(0,4):
+            write(ser, byte(x_1_random, 3-k), 27-(k+8))
+        for k in xrange(0,4):
+            write(ser, byte(x_2_random, 3-k), 27-(k+12))
+        
+        # send three shares of y (y always varies)      
         y = int(random.randint(0,0xFFFFFFFF))
-
+        y_1_random = int(random.randint(0,0xFFFFFFFF))
+        y_2_random = int(random.randint(0,0xFFFFFFFF))
+        y_3_random = y_1_random ^ y_2_random ^ y
+        for k in xrange(0,4):
+            write(ser, byte(y_3_random, 3-k), 27-(k+4))
+        for k in xrange(0,4):
+            write(ser, byte(y_1_random, 3-k), 27-(k+16))
+        for k in xrange(0,4):
+            write(ser, byte(y_2_random, 3-k), 27-(k+20))
+        
+            # send z random number
+        z_random = int(random.randint(0,0xFFFFFFFF))
+        for k in xrange(0,4):
+            write(ser, byte(z_random, 3-k), 27-(k+24))
+    
         # save y
         if en_oscilloscope == True:
             y_inputs[i%traces_per_file] = y
@@ -175,11 +179,7 @@ if __name__ == "__main__":
         #for j in xrange(0,8):
         #    for k in xrange(0,4):
         #        write(ser, byte(key[j], 3-k), 63-(j*4+k+16))
-
-        # send random y
-        for k in xrange(0,4):
-            write(ser, byte(y, 3-k), 27-(k+4))
-        
+            
        
         write(ser, 1, 0x21)
                
@@ -212,9 +212,33 @@ if __name__ == "__main__":
         #    for k in xrange(0,4):
         #        write(ser, byte(key[j], k), j*4+k+16)
         
-        # send fixed y
-            for k in xrange(0,4):
-                write(ser, byte(tvla_y, 3-k), 27-(k+4))
+        #send x again (x is always fixed but the random shares change)
+        x_1_random = int(random.randint(0,0xFFFFFFFF))
+        x_2_random = int(random.randint(0,0xFFFFFFFF))
+        x_3_random = (x_1_random ^ x_2_random ^ x) & 0xFFFFFFFF
+        for k in xrange(0,4):
+            write(ser, byte(x_3_random, 3-k), 27-(k))
+        for k in xrange(0,4):
+            write(ser, byte(x_1_random, 3-k), 27-(k+8))
+        for k in xrange(0,4):
+            write(ser, byte(x_2_random, 3-k), 27-(k+12))
+        
+        # make two random number with fixed Y and send
+        y_1_random = int(random.randint(0,0xFFFFFFFF))
+        y_2_random = int(random.randint(0,0xFFFFFFFF))
+        y_3_random = y_1_random ^ y_2_random ^ tvla_y
+        for k in xrange(0,4):
+            write(ser, byte(y_3_random, 3-k), 27-(k+4))
+        for k in xrange(0,4):
+            write(ser, byte(y_1_random, 3-k), 27-(k+16))
+        for k in xrange(0,4):
+            write(ser, byte(y_2_random, 3-k), 27-(k+20))    
+        
+        # make a random Z and send
+        z_random = int(random.randint(0,0xFFFFFFFF))
+        for k in xrange(0,4):
+            write(ser, byte(z_random, 3-k), 27-(k+24))
+        
         
         write(ser, 1, 0x21)
         #time.sleep(0.001)
@@ -264,7 +288,7 @@ if __name__ == "__main__":
                              { 'x': x,
                                'traces': traces_fixed,
                                'y': y_input_fixed,
-                               'keystreams' : s_results_fixed }, 
+                               's' : s_results_fixed }, 
                              do_compression=True, 
                              oned_as='row')
                 os.chdir("..")
