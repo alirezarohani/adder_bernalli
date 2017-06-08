@@ -257,7 +257,8 @@ if __name__ == "__main__":
         # store data after a fixed number of captured traces
         if en_oscilloscope == True:
             if(i%traces_per_file == traces_per_file-1):
-                seqtrace = le.getWaveform4()
+                seqtrace = le.getWaveform1()
+                seqtrace_t = le.getWaveform4()
                 
                 le.getParameters()
                 
@@ -267,16 +268,22 @@ if __name__ == "__main__":
                 print seqtrace.shape
                 
                 seqtrace = seqtrace[0:samples_per_trace*traces_per_file*2]
+                seqtrace_t = seqtrace_t[0:samples_per_trace*traces_per_file*2]
                 
                 
                 tmp_traces = np.split(seqtrace,seqtrace.shape[0]/samples_per_trace)
                 traces = tmp_traces[::2]
                 traces_fixed = tmp_traces[1::2]
+                
+                tmp_traces_t = np.split(seqtrace_t,seqtrace_t.shape[0]/samples_per_trace)
+                traces_t_random = tmp_traces_t[::2]
+                traces_t_fixed = tmp_traces_t[1::2]
 
                 os.chdir("random")
                 spio.savemat("traces" + str(i+1), 
                              { 'x': x,
                                'traces': traces,
+                               'triger': traces_t_random,
                                'y': y_inputs,
                                's' : s_results },  
                              do_compression=True, 
@@ -287,6 +294,7 @@ if __name__ == "__main__":
                 spio.savemat("traces" + str(i+1), 
                              { 'x': x,
                                'traces': traces_fixed,
+                               'triger' : traces_t_fixed,
                                'y': y_input_fixed,
                                's' : s_results_fixed }, 
                              do_compression=True, 
