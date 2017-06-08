@@ -79,7 +79,6 @@ architecture str of adder_dp is
     -- generating random value for z
     --signal z_in_t: std_logic;
     signal c_out_t: std_logic;
-    signal z_out_t: std_logic_vector(num_bits-1  downto 0);
     signal mux_z_output : std_logic_vector(num_bits  downto 1);
 
     
@@ -102,7 +101,8 @@ architecture str of adder_dp is
     ---------------------------------------------------------------
     --31 mux to select z_in_t from previous Y_3 or from last s
     Z_INPUT: for i in 1 to num_bits generate
-            mux_z:mux port map(tmp3y(i-1),s_1_out(num_bits-1),sel_z(i),mux_z_output(i));
+            --mux_z:mux port map(tmp3y(i-1),s_1_out(num_bits-1),sel_z(i),mux_z_output(i));
+            mux_z:mux port map(tmp3y(i-1),tmp3y(num_bits-1),sel_z(i),mux_z_output(i));
     end generate;
     
     
