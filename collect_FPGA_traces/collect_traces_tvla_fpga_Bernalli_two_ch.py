@@ -46,7 +46,7 @@ if __name__ == "__main__":
     print samples_per_trace
     
     ser = serial.Serial(
-        port='COM47',
+        port='COM54',
         baudrate=115200,
         xonxoff=0, 
         rtscts=0,

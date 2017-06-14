@@ -31,7 +31,7 @@ architecture fsm of adder_ctrl is
     type state_type is (initial, initial_next,s0,s1,final, dummy, dummy_3);
     signal next_state, current_state: state_type;
     signal count, next_count: INTEGER RANGE 0 to 33;
-    signal count_dummy, next_count_dummy: INTEGER RANGE 0 to 6;
+    signal count_dummy, next_count_dummy: INTEGER RANGE 0 to 21;
     
     begin   
     
@@ -80,7 +80,7 @@ architecture fsm of adder_ctrl is
                 
             when dummy =>
                 next_count_dummy <= count_dummy + 1;
-                if count_dummy  <5 then
+                if count_dummy  <20 then
                     next_state <= dummy;
                 else
                     next_state <= s0;
@@ -135,7 +135,7 @@ architecture fsm of adder_ctrl is
                 
             when dummy_3 =>
                 next_count_dummy  <= count_dummy + 1;
-                if count_dummy  <5 then
+                if count_dummy  <20 then
                     next_state <= dummy_3;
                 else
                     next_state <= final;
