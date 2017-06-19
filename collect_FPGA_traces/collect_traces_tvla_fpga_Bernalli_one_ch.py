@@ -115,7 +115,8 @@ if __name__ == "__main__":
     x_2_random = np.empty((1), np.uint32)
     y_1_random = np.empty((1), np.uint32)
     y_2_random = np.empty((1), np.uint32)
-    z_random = np.empty((1), np.uint32)
+    z_random_1 = np.empty((1), np.uint32)
+    z_random_2 = np.empty((1), np.uint32)
     
     # x_1_random = int(random.randint(0,0xFFFFFFFF))
     # x_2_random = int(random.randint(0,0xFFFFFFFF))
@@ -138,11 +139,11 @@ if __name__ == "__main__":
         x_2_random = int(random.randint(0,0xFFFFFFFF))
         x_3_random = (x_1_random ^ x_2_random ^ x) & 0xFFFFFFFF
         for k in xrange(0,4):
-            write(ser, byte(x_3_random, 3-k), 27-(k))
+            write(ser, byte(x_3_random, 3-k), 31-(k))
         for k in xrange(0,4):
-            write(ser, byte(x_1_random, 3-k), 27-(k+8))
+            write(ser, byte(x_1_random, 3-k), 31-(k+8))
         for k in xrange(0,4):
-            write(ser, byte(x_2_random, 3-k), 27-(k+12))
+            write(ser, byte(x_2_random, 3-k), 31-(k+12))
         
         # send three shares of y (y always varies)      
         y = int(random.randint(0,0xFFFFFFFF))
@@ -150,16 +151,20 @@ if __name__ == "__main__":
         y_2_random = int(random.randint(0,0xFFFFFFFF))
         y_3_random = y_1_random ^ y_2_random ^ y
         for k in xrange(0,4):
-            write(ser, byte(y_3_random, 3-k), 27-(k+4))
+            write(ser, byte(y_3_random, 3-k), 31-(k+4))
         for k in xrange(0,4):
-            write(ser, byte(y_1_random, 3-k), 27-(k+16))
+            write(ser, byte(y_1_random, 3-k), 31-(k+16))
         for k in xrange(0,4):
-            write(ser, byte(y_2_random, 3-k), 27-(k+20))
+            write(ser, byte(y_2_random, 3-k), 31-(k+20))
         
             # send z random number
-        z_random = int(random.randint(0,0xFFFFFFFF))
+        z_random_1 = int(random.randint(0,0xFFFFFFFF))
         for k in xrange(0,4):
-            write(ser, byte(z_random, 3-k), 27-(k+24))
+            write(ser, byte(z_random_1, 3-k), 31-(k+24))
+            
+        z_random_2 = int(random.randint(0,0xFFFFFFFF))
+        for k in xrange(0,4):
+            write(ser, byte(z_random_2, 3-k), 31-(k+28))
     
         # save y
         if en_oscilloscope == True:
@@ -181,7 +186,7 @@ if __name__ == "__main__":
         #        write(ser, byte(key[j], 3-k), 63-(j*4+k+16))
             
        
-        write(ser, 1, 0x21)
+        write(ser, 1, 0x25)
                
         s_results[i%traces_per_file] = (x + y) & 0xFFFFFFFF
 
@@ -217,30 +222,33 @@ if __name__ == "__main__":
         x_2_random = int(random.randint(0,0xFFFFFFFF))
         x_3_random = (x_1_random ^ x_2_random ^ x) & 0xFFFFFFFF
         for k in xrange(0,4):
-            write(ser, byte(x_3_random, 3-k), 27-(k))
+            write(ser, byte(x_3_random, 3-k), 31-(k))
         for k in xrange(0,4):
-            write(ser, byte(x_1_random, 3-k), 27-(k+8))
+            write(ser, byte(x_1_random, 3-k), 31-(k+8))
         for k in xrange(0,4):
-            write(ser, byte(x_2_random, 3-k), 27-(k+12))
+            write(ser, byte(x_2_random, 3-k), 31-(k+12))
         
         # make two random number with fixed Y and send
         y_1_random = int(random.randint(0,0xFFFFFFFF))
         y_2_random = int(random.randint(0,0xFFFFFFFF))
         y_3_random = y_1_random ^ y_2_random ^ tvla_y
         for k in xrange(0,4):
-            write(ser, byte(y_3_random, 3-k), 27-(k+4))
+            write(ser, byte(y_3_random, 3-k), 31-(k+4))
         for k in xrange(0,4):
-            write(ser, byte(y_1_random, 3-k), 27-(k+16))
+            write(ser, byte(y_1_random, 3-k), 31-(k+16))
         for k in xrange(0,4):
-            write(ser, byte(y_2_random, 3-k), 27-(k+20))    
+            write(ser, byte(y_2_random, 3-k), 31-(k+20))    
         
         # make a random Z and send
-        z_random = int(random.randint(0,0xFFFFFFFF))
+        z_random_1 = int(random.randint(0,0xFFFFFFFF))
         for k in xrange(0,4):
-            write(ser, byte(z_random, 3-k), 27-(k+24))
+            write(ser, byte(z_random_1, 3-k), 31-(k+24))
+            
+        z_random_2 = int(random.randint(0,0xFFFFFFFF))
+        for k in xrange(0,4):
+            write(ser, byte(z_random_2, 3-k), 31-(k+24))
         
-        
-        write(ser, 1, 0x21)
+        write(ser, 1, 0x25)
         #time.sleep(0.001)
         
         # retrieve result -- disabled for performance optimization

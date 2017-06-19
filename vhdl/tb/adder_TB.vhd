@@ -25,7 +25,8 @@ component adder
     rand_2   : in std_logic_vector(num_bits-1 downto 0);
     rand_3   : in std_logic_vector(num_bits-1 downto 0);
     rand_4   : in std_logic_vector(num_bits-1 downto 0);
-    rand_1bit : in std_logic_vector(num_bits-1 downto 0);
+    rand_1bit_1 : in std_logic_vector(num_bits-1 downto 0);
+    rand_1bit_2 : in std_logic_vector(num_bits-1 downto 0);
     adder_en: in std_logic;
     clk : in std_logic;
     data_out_valid: out std_logic;
@@ -37,12 +38,12 @@ signal x_t,y_t,s_t : std_logic_vector(num_bits-1 downto 0);
 signal rst_n_t,adder_en_t,data_out_valid_t: std_logic;
 signal clk_t:std_logic;
 signal x_real, y_real,rand_1_t,rand_2_t,rand_3_t,rand_4_t:std_logic_vector(num_bits-1 downto 0);
-signal rand1b_t : std_logic_vector(31 downto 0);
+signal rand1b_t_1, rand1b_t_2: std_logic_vector(31 downto 0);
 signal c_out_t : std_logic_vector(7 downto 0);
 signal num_random: std_logic_vector (31 downto 0);
 
 begin
-adder_tb: adder port map(x_t,y_t,rst_n_t,rand_1_t,rand_2_t,rand_3_t,rand_4_t,rand1b_t,adder_en_t,clk_t,data_out_valid_t,s_t,c_out_t);
+adder_tb: adder port map(x_t,y_t,rst_n_t,rand_1_t,rand_2_t,rand_3_t,rand_4_t,rand1b_t_1,rand1b_t_2,adder_en_t,clk_t,data_out_valid_t,s_t,c_out_t);
 process
     begin
     clk_T <= '0';
@@ -71,7 +72,8 @@ process
     rand_3_t <=  x"243dacb2";
     rand_4_t <=  x"ab32a201";
     y_real <= x"a206a206";
-    rand1b_t <= x"00000002";
+    rand1b_t_1 <= x"00000002";
+    rand1b_t_2 <= x"00000001";
     
     wait for 10 ns;
     adder_en_t <= '0';
@@ -83,7 +85,9 @@ process
     rand_3_t <=  x"950ef649";
     rand_4_t <=  x"809f6309";
     y_real <= x"80000000";
-    rand1b_t <= x"00000001";
+    rand1b_t_1 <= x"00000002";
+    rand1b_t_2 <= x"00000001";
+    
     wait for 10 ns;
     adder_en_t <= '0';
     wait for 5000 ns;
@@ -94,7 +98,8 @@ process
     rand_3_t <=  x"5f2970fe";
     rand_4_t <=  x"63084bae";
     y_real <= x"de5fde5f";
-    rand1b_t <= x"000000f1";
+    rand1b_t_1 <= x"00000002";
+    rand1b_t_2 <= x"00000001";
     
     
     wait for 10 ns;
@@ -107,7 +112,8 @@ process
     rand_3_t <=  x"eef87501";
     rand_4_t <=  x"5603298e";
     y_real <= x"09460946";
-    rand1b_t <= x"00000ee1";
+    rand1b_t_1 <= x"00000002";
+    rand1b_t_2 <= x"00000001";
     
     wait for 10 ns;
     adder_en_t <= '0';
@@ -119,7 +125,8 @@ process
     rand_3_t <=  x"fba26894";
     rand_4_t <=  x"890ef569";
     y_real <= x"00000001";
-    rand1b_t <= x"00000e61";
+    rand1b_t_1 <= x"00000002";
+    rand1b_t_2 <= x"00000001";
     
     wait for 10 ns;
     adder_en_t <= '0';
