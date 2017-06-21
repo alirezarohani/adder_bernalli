@@ -101,9 +101,9 @@ architecture str of adder_dp is
     
     
     ---------------------------------------------------------------
-    --to select one random bit from outside or from last half-adder
-    mux_z_1:mux port map(rn1b_1,tmp2y(num_bits-1),sel_z,mux_z_output_1);
-    mux_z_2:mux port map(rn1b_2,tmp3y(num_bits-1),sel_z,mux_z_output_2);
+    --to select one random bit from outside or from last half-adder (tmp2y and tmp2y)
+    mux_z_1:mux port map(rn1b_1,tmp_s_1(num_bits-1),sel_z,mux_z_output_1);
+    mux_z_2:mux port map(rn1b_2,tmp_s_2(num_bits-1),sel_z,mux_z_output_2);
     
     
     ---------------------------------------------------------------
@@ -205,7 +205,7 @@ architecture str of adder_dp is
                 end generate;
                 
             next_ha: if 1<=i and i<=num_bits generate
-                half_adders: ha port map (tmp1x(i),tmp2x(i),tmp3x(i),tmp1y(i),tmp2y(i),tmp3y(i), tmp2y(i-1),tmp3y(i-1),tmp_c_1(i),tmp_c_2(i),tmp_c_3(i),tmp_s_1(i),tmp_s_2(i),tmp_s_3(i));
+                half_adders: ha port map (tmp1x(i),tmp2x(i),tmp3x(i),tmp1y(i),tmp2y(i),tmp3y(i), tmp_s_1(i-1),tmp_s_2(i-1),tmp_c_1(i),tmp_c_2(i),tmp_c_3(i),tmp_s_1(i),tmp_s_2(i),tmp_s_3(i));
                 end generate;
                     
     end generate HALF_ADDERS;
