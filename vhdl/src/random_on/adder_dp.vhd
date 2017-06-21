@@ -102,8 +102,8 @@ architecture str of adder_dp is
     
     ---------------------------------------------------------------
     --to select one random bit from outside or from last half-adder (tmp2y and tmp2y)
-    mux_z_1:mux port map(rn1b_1,tmp_s_1(num_bits-1),sel_z,mux_z_output_1);
-    mux_z_2:mux port map(rn1b_2,tmp_s_2(num_bits-1),sel_z,mux_z_output_2);
+    mux_z_1:mux port map(rn1b_1,s_1_out(num_bits-1),sel_z,mux_z_output_1);
+    mux_z_2:mux port map(rn1b_2,s_2_out(num_bits-1),sel_z,mux_z_output_2);
     
     
     ---------------------------------------------------------------
