@@ -205,7 +205,7 @@ architecture str of adder_dp is
                 end generate;
                 
             next_ha: if 1<=i and i<=num_bits generate
-                half_adders: ha port map (tmp1x(i),tmp2x(i),tmp3x(i),tmp1y(i),tmp2y(i),tmp3y(i), tmp_s_1(i-1),tmp_s_2(i-1),tmp_c_1(i),tmp_c_2(i),tmp_c_3(i),tmp_s_1(i),tmp_s_2(i),tmp_s_3(i));
+                half_adders: ha port map (tmp1x(i),tmp2x(i),tmp3x(i),tmp1y(i),tmp2y(i),tmp3y(i), tmp1y(i-1),tmp2y(i-1),tmp_c_1(i),tmp_c_2(i),tmp_c_3(i),tmp_s_1(i),tmp_s_2(i),tmp_s_3(i));
                 end generate;
                     
     end generate HALF_ADDERS;
