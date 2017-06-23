@@ -20,7 +20,8 @@ port(
     rn32b_2   : in std_logic_vector(num_bits-1  downto 0);
     rn32b_3   : in std_logic_vector(num_bits-1  downto 0);
     rn32b_4   : in std_logic_vector(num_bits-1  downto 0);
-    rn1b      : in std_logic;
+    rn1b_1      : in std_logic;
+    rn1b_2      : in std_logic;
     --sel_rand : in std_logic;
     load_s_1: in std_logic_vector(num_bits  downto 0);
     load_s_2: in std_logic_vector(num_bits  downto 0);
@@ -28,7 +29,7 @@ port(
     load_c_1: in std_logic_vector(num_bits  downto 0);
     load_c_2: in std_logic_vector(num_bits  downto 0);
     load_c_3: in std_logic_vector(num_bits  downto 0);
-    sel_z   : in std_logic_vector(num_bits downto 1);
+    sel_z   : in std_logic;
     s: out std_logic_vector(num_bits-1  downto 0);
     c_out: out std_logic);
 end entity adder_dp;
@@ -43,7 +44,8 @@ architecture str of adder_dp is
         y1 : in std_logic;
         y2 : in std_logic;
         y3 : in std_logic;
-        z_in  : in std_logic;
+        z_in_1  : in std_logic;
+        z_in_2  : in std_logic;
         c1 : out std_logic;
         c2 : out std_logic;
         c3 : out std_logic;
@@ -79,7 +81,7 @@ architecture str of adder_dp is
     -- generating random value for z
     --signal z_in_t: std_logic;
     signal c_out_t: std_logic;
-    signal mux_z_output : std_logic_vector(num_bits  downto 1);
+    signal mux_z_output_1,mux_z_output_2 : std_logic;
 
     
     begin
@@ -99,11 +101,9 @@ architecture str of adder_dp is
     
     
     ---------------------------------------------------------------
-    --31 mux to select z_in_t from previous Y_3 or from last s
-    Z_INPUT: for i in 1 to num_bits generate
-            --mux_z:mux port map(tmp3y(i-1),s_1_out(num_bits-1),sel_z(i),mux_z_output(i));
-            mux_z:mux port map(tmp3y(i-1),tmp3y(num_bits-1),sel_z(i),mux_z_output(i));
-    end generate;
+    --to select one random bit from outside or from last half-adder (tmp2y and tmp2y)
+    mux_z_1:mux port map(rn1b_1,tmp_s_1(num_bits-1),sel_z,mux_z_output_1);
+    mux_z_2:mux port map(rn1b_2,tmp_s_2(num_bits-1),sel_z,mux_z_output_2);
     
     
     ---------------------------------------------------------------
@@ -168,7 +168,7 @@ architecture str of adder_dp is
     -- for the first share of y
     MUX_y_1: for i in 0 to num_bits generate
             mux_y_1_first:if i=0 generate
-                mux_y: mux port map (y_in_1(i),'0',sel,tmp1y(i));
+                mux_y: mux port map (y_in_1(i),s_1_out(i),sel,tmp1y(i));
             end generate;
             mux_y_1_nexts:if i>=1 generate
                 mux_1n: mux port map (y_in_1(i),s_1_out(i),sel,tmp1y(i));
@@ -178,7 +178,7 @@ architecture str of adder_dp is
     -- for the second share of y
     MUX_y_2: for i in 0 to num_bits generate
             mux_y_2_first:if i=0 generate
-                mux_2: mux port map (y_in_2(i),'0',sel,tmp2y(i));
+                mux_2: mux port map (y_in_2(i),s_2_out(i),sel,tmp2y(i));
             end generate;
             mux_y_2_nexts:if i>=1 generate
                 mux_2n: mux port map (y_in_2(i),s_2_out(i),sel,tmp2y(i));
@@ -188,7 +188,7 @@ architecture str of adder_dp is
     -- for the third share of y
     MUX_y_3: for i in 0 to num_bits generate
             mux_y_3_first:if i=0 generate
-                mux_3: mux port map (y_in_3(i),'0',sel,tmp3y(i));
+                mux_3: mux port map (y_in_3(i),s_3_out(i),sel,tmp3y(i));
             end generate;
             mux_y_3_nexts:if i>=1 generate
                 mux_3n: mux port map (y_in_3(i),s_3_out(i),sel,tmp3y(i));
@@ -201,11 +201,11 @@ architecture str of adder_dp is
     
     HALF_ADDERS: for i in 0 to num_bits  generate
             first_ha: if i=0 generate
-                first:ha port map (tmp1x(i),tmp2x(i),tmp3x(i),tmp1y(i),tmp2y(i),tmp3y(i),rn1b,tmp_c_1(i),tmp_c_2(i),tmp_c_3(i),tmp_s_1(i),tmp_s_2(i),tmp_s_3(i));
+                first:ha port map (tmp1x(i),tmp2x(i),tmp3x(i),tmp1y(i),tmp2y(i),tmp3y(i),mux_z_output_1,mux_z_output_2,tmp_c_1(i),tmp_c_2(i),tmp_c_3(i),tmp_s_1(i),tmp_s_2(i),tmp_s_3(i));
                 end generate;
                 
             next_ha: if 1<=i and i<=num_bits generate
-                half_adders: ha port map (tmp1x(i),tmp2x(i),tmp3x(i),tmp1y(i),tmp2y(i),tmp3y(i), mux_z_output(i),tmp_c_1(i),tmp_c_2(i),tmp_c_3(i),tmp_s_1(i),tmp_s_2(i),tmp_s_3(i));
+                half_adders: ha port map (tmp1x(i),tmp2x(i),tmp3x(i),tmp1y(i),tmp2y(i),tmp3y(i), tmp_s_1(i-1),tmp_s_2(i-1),tmp_c_1(i),tmp_c_2(i),tmp_c_3(i),tmp_s_1(i),tmp_s_2(i),tmp_s_3(i));
                 end generate;
                     
     end generate HALF_ADDERS;

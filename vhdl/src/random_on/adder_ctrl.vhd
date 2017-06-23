@@ -20,7 +20,7 @@ entity adder_ctrl is
         load_c_1: out std_logic_vector(num_bits downto 0);
         load_c_2: out std_logic_vector(num_bits downto 0);
         load_c_3: out std_logic_vector(num_bits downto 0);
-        sel_z   : out std_logic_vector(num_bits downto 1);
+        sel_z   : out std_logic;
         sel : out std_logic;
         
         data_out_valid: out std_logic);
@@ -63,7 +63,7 @@ architecture fsm of adder_ctrl is
         load_c_1 <= (others => '0');
         load_c_2 <= (others => '0');
         load_c_3 <= (others => '0');
-        sel_z   <= (others => '0');
+        sel_z   <= '0';
         sel <= '0';
         data_out_valid <= '0';
         next_count <= 0;
@@ -110,6 +110,9 @@ architecture fsm of adder_ctrl is
                 load_s_3(num_bits downto count) <=  (others => '1');
                 load_s_3(count-1 downto 0) <=  (others => '0');
                 
+             
+                
+                
                 load_c_1(num_bits downto count) <=  (others => '1');
                 load_c_1(count-1 downto 0) <=  (others => '0');
                 
@@ -120,7 +123,7 @@ architecture fsm of adder_ctrl is
                 load_c_3(count-1 downto 0) <=  (others => '0');
                 
                 -- to get the Z from the last S
-                sel_z(count) <= '1';
+                sel_z <= '1';
                 
                 sel <= '1';
                 --en_lfsr <= '0';   
@@ -151,6 +154,7 @@ architecture fsm of adder_ctrl is
                 
                 load_s_3(num_bits) <=  '1';
                 load_s_3(num_bits-1 downto 0) <=  (others => '0');
+               
                 
                 load_c_1(num_bits) <=  '1';
                 load_c_1(num_bits-2 downto 0) <=  (others => '0');
@@ -162,6 +166,7 @@ architecture fsm of adder_ctrl is
                 load_c_3(num_bits-1 downto 0) <=  (others => '0');
             
                 sel <= '1';
+                sel_z <= '1';
                 data_out_valid <= '1';
                 --en_lfsr <= '1';   
                 next_state <= initial;
